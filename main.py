@@ -1,3 +1,7 @@
+import copy
+import random
+
+
 def isFeasible(solution):
     itemWeight = {
         1: 30,
@@ -6,35 +10,43 @@ def isFeasible(solution):
         4: 20,
         5: 5
     }
+    isFeasibleSolution = 0
+
     if len(solution) != 5:
-        return 1
+        isFeasibleSolution = 1
     else:
-        b1 = b2 = b3 = b4 = b5 = 0
+        bins = [0, 0, 0, 0, 0]
         for i in range(0, 5):
-            if solution[i] == 1:
-                b1 = b1 + itemWeight[i + 1]
-            if solution[i] == 2:
-                b2 = b2 + itemWeight[i + 1]
-            if solution[i] == 3:
-                b3 = b3 + itemWeight[i + 1]
-            if solution[i] == 4:
-                b4 = b4 + itemWeight[i + 1]
-            if solution[i] == 5:
-                b5 = b5 + itemWeight[i + 1]
-        if b1 <= 50 and b2 <= 50 and b3 <= 50 and b4 <= 50 and b5 <= 50:
-            return 0
-        else:
-            return 1
+            bins[solution[i] - 1] = bins[solution[i] - 1] + itemWeight[i + 1]
+
+        for binWeight in bins:
+            if binWeight > 50:
+                isFeasibleSolution = 1
+                break
+    return isFeasibleSolution
 
 
-def generatePopulation(items, bins, pop_size):
-    popList = []
-    for i in range(0, pop_size):
-        popList.append()
+def mutate(populationItems):
+    randIndex = random.randint(0, (len(populationItems) - 1))
+    print("Item mutated: " + str(randIndex+1))
+
+    res = changeRandomGene(populationItems, randIndex)
+    while isFeasible(res[randIndex]) == 1:
+        res = changeRandomGene(populationItems, randIndex)
+
+    return res
 
 
-def mutate():
-    pass
+def changeRandomGene(allItems, randIndex):
+    items = copy.deepcopy(allItems)
+    randItem = items[randIndex]
+    randGene = random.randint(0, (len(items) - 1))
+    oldGeneValue = randItem[randGene]
+    newGeneValue = random.randint(1, 5)
+    while newGeneValue == oldGeneValue:
+        newGeneValue = random.randint(1, 5)
+    randItem[randGene] = newGeneValue
+    return items
 
 
 def crossover():
@@ -42,5 +54,13 @@ def crossover():
 
 
 if __name__ == "__main__":
-    s = [1, 2, 3, 1, 2]
-    print(isFeasible(s))
+    population = [
+        [1, 2, 3, 1, 2],
+        [2, 1, 3, 2, 3],
+        [2, 1, 2, 1, 1],
+        [3, 1, 1, 4, 2]
+    ]
+    print(population)
+    print("\nPopulation after mutation:")
+    result = mutate(population)
+    print(result)
