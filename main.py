@@ -26,41 +26,75 @@ def isFeasible(solution):
     return isFeasibleSolution
 
 
-def mutate(populationItems):
-    randIndex = random.randint(0, (len(populationItems) - 1))
-    print("Item mutated: " + str(randIndex+1))
-
-    res = changeRandomGene(populationItems, randIndex)
-    while isFeasible(res[randIndex]) == 1:
-        res = changeRandomGene(populationItems, randIndex)
-
-    return res
-
-
 def changeRandomGene(allItems, randIndex):
     items = copy.deepcopy(allItems)
     randItem = items[randIndex]
     randGene = random.randint(0, (len(items) - 1))
+
     oldGeneValue = randItem[randGene]
     newGeneValue = random.randint(1, 5)
+
     while newGeneValue == oldGeneValue:
         newGeneValue = random.randint(1, 5)
     randItem[randGene] = newGeneValue
     return items
 
 
-def crossover():
-    pass
+def mutate(populationItems):
+    randIndex = random.randint(0, (len(populationItems) - 1))
+    print("Parent " + str(randIndex + 1) + " was chosen for mutation")
+    res = changeRandomGene(populationItems, randIndex)
+    while isFeasible(res[randIndex]) == 1:
+        res = changeRandomGene(populationItems, randIndex)
+    return res
+
+
+def pickTwoParents(parents):
+    differentParents = []
+    noOfParents = len(parents)
+    p1 = p2 = 0
+    while p1 == p2:
+        p1 = random.randint(0, (noOfParents - 1))
+        p2 = random.randint(0, (noOfParents - 1))
+    differentParents.append(p1)
+    differentParents.append(p2)
+    return differentParents
+
+
+def crossover(parents):
+    point = random.randint(1, (len(parents[0]) - 1))
+    parentLength = len(parents[0])
+    p1 = p2 = 0
+    child = []
+
+    while isFeasible(child) == 1:
+        child = []
+        parentsToCrossover = pickTwoParents(parents)
+        p1 = parents[parentsToCrossover[0]]
+        p2 = parents[parentsToCrossover[1]]
+
+        for i in range(0, parentLength):
+            if i < point:
+                child.append(p1[i])
+            else:
+                child.append(p2[i])
+
+    print("Parent " + str(p1) + " and parent " + str(p2) + " were chosen for crossover at point " + str(point))
+    parents.append(child)
 
 
 if __name__ == "__main__":
     population = [
         [1, 2, 3, 1, 2],
-        [2, 1, 3, 2, 3],
-        [2, 1, 2, 1, 1],
+        [2, 4, 3, 2, 3],
+        [5, 1, 2, 1, 1],
         [3, 1, 1, 4, 2]
     ]
+    print("Initial population:")
     print(population)
     print("\nPopulation after mutation:")
-    result = mutate(population)
-    print(result)
+    population = mutate(population)
+    print(population)
+    print("\nPopulation after crossover:")
+    crossover(population)
+    print(population)
