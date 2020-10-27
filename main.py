@@ -3,6 +3,7 @@ import random
 
 
 def isFeasible(solution):
+    isFeasibleSolution = 0
     itemWeight = {
         1: 30,
         2: 25,
@@ -10,7 +11,6 @@ def isFeasible(solution):
         4: 20,
         5: 5
     }
-    isFeasibleSolution = 0
 
     if len(solution) != 5:
         isFeasibleSolution = 1
@@ -66,7 +66,6 @@ def crossover(parents):
     parentLength = len(parents[0])
     p1 = p2 = 0
     child = []
-
     while isFeasible(child) == 1:
         child = []
         parentsToCrossover = pickTwoParents(parents)
@@ -78,7 +77,6 @@ def crossover(parents):
                 child.append(p1[i])
             else:
                 child.append(p2[i])
-
     print("Parent " + str(p1) + " and parent " + str(p2) + " were chosen for crossover at point " + str(point))
     parents.append(child)
 
@@ -90,11 +88,14 @@ if __name__ == "__main__":
         [5, 1, 2, 1, 1],
         [3, 1, 1, 4, 2]
     ]
+
     print("Initial population:")
     print(population)
+
     print("\nPopulation after mutation:")
     population = mutate(population)
     print(population)
+
     print("\nPopulation after crossover:")
     crossover(population)
     print(population)
